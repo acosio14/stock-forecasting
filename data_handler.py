@@ -18,8 +18,20 @@ def normalize(array: NDArray[np.float64]):
     """Normalize the data."""
     return (array - np.min(array)) / (np.max(array) - np.min(array))
 
-def sliding_window(array: NDArray[np.float64]):
+def sliding_window(array: NDArray[np.float64], window_length: int) -> NDArray[np.float64]:
     # Imporvement: Add variable window_length size
     """Sliding window of size 3."""
-    return np.column_stack([array[0:-2]], array[1:-1], array[2:])
+    array_length = array.shape[0]
+    n = window_length - 1
+
+    arr_list = []
+    for i in range(window_length):
+        idx1 = i
+        idx2 = i - n
+        if i == n:
+            idx2 = array_length
+        sequence = array[idx1:idx2]
+        arr_list.append(sequence)
+
+    return np.column_stack(arr_list)
 
