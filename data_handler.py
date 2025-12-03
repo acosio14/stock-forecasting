@@ -21,6 +21,8 @@ def data_transformation(array: NDArray[np.float64]):
 
 def sliding_window(array: NDArray[np.float64], window_length: int) -> NDArray[np.float64]:
     """Sliding window of a variable size."""
+    # Improvement: Add ability to change sliding window step
+    # i.e. = [0,1,2], [1,2,3] or [0,1,2],[2,3,4] or [0,1,2],[3,4,5]
     array_length = array.shape[0]
     n = window_length - 1
 
