@@ -14,13 +14,13 @@ def extract_stock_close_price(
         close_price_df.to_csv(filepath)
     return close_price_df[columns].to_numpy()
 
-def normalize(array: NDArray[np.float64]):
-    """Normalize the data."""
-    return (array - np.min(array)) / (np.max(array) - np.min(array))
+def data_transformation(array: NDArray[np.float64]):
+    """Perform log transform and standardization of data."""
+    log_array = np.log(array)
+    return (log_array - log_array.mean()) / log_array.std()
 
 def sliding_window(array: NDArray[np.float64], window_length: int) -> NDArray[np.float64]:
-    # Imporvement: Add variable window_length size
-    """Sliding window of size 3."""
+    """Sliding window of a variable size."""
     array_length = array.shape[0]
     n = window_length - 1
 
