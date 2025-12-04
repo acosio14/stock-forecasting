@@ -19,10 +19,18 @@ def data_transformation(array: NDArray[np.float64]):
     log_array = np.log(array)
     return (log_array - log_array.mean()) / log_array.std()
 
+def extract_test_set(array: NDArray[np.float64], ratio):
+    array_length = len(array)
+    test_set_size = int(ratio * array_length)
+    step = int(array_length / test_set_size)
+
+    return array[0::step]
+
 def sliding_window(array: NDArray[np.float64], window_length: int) -> NDArray[np.float64]:
     """Sliding window of a variable size."""
     # Improvement: Add ability to change sliding window step
     # i.e. = [0,1,2], [1,2,3] or [0,1,2],[2,3,4] or [0,1,2],[3,4,5]
+    # Make window size of 50 -> 40 train, 10 val, last will have extra
     array_length = array.shape[0]
     n = window_length - 1
 
@@ -37,15 +45,8 @@ def sliding_window(array: NDArray[np.float64], window_length: int) -> NDArray[np
 
     return np.column_stack(arr_list)
 
-def extract_test_set(array: NDArray[np.float64], ratio):
-    array_length = len(array)
-    test_set_size = int(ratio * array_length)
-    step = int(array_length / test_set_size)
-
-    return array[0::step]
-
-def split_sliding_window(window: NDArray[np.float64], split_ratio):
-    
+def split_data(window: NDArray[np.float64]):
+    """ THis is meant to split a window into X, y"""
 
 
-    return x_train, x_val, x_test, y_train, y_val, y_test
+    return X, y
