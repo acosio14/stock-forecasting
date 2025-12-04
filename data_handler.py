@@ -37,3 +37,15 @@ def sliding_window(array: NDArray[np.float64], window_length: int) -> NDArray[np
 
     return np.column_stack(arr_list)
 
+def extract_test_set(array: NDArray[np.float64], ratio):
+    array_length = len(array)
+    test_set_size = int(ratio * array_length)
+    step = int(array_length / test_set_size)
+
+    return array[0::step]
+
+def split_sliding_window(window: NDArray[np.float64], split_ratio):
+    
+
+
+    return x_train, x_val, x_test, y_train, y_val, y_test
