@@ -34,19 +34,23 @@ def sliding_window(array: NDArray[np.float64], window_length: int) -> NDArray[np
     array_length = array.shape[0]
     n = window_length - 1
 
-    arr_list = []
+    train_set = [], val_set = []
     for i in range(window_length):
         idx1 = i
         idx2 = i - n
         if i == n:
             idx2 = array_length
         sequence = array[idx1:idx2]
-        arr_list.append(sequence)
+        train_set.append(sequence[:int(0.8*sequence)])
+        val_set.append(sequence[int(0.8*sequence):])
 
-    return np.column_stack(arr_list)
+    return np.column_stack(train_set), np.column_stack(val_set)
 
 def split_data(window: NDArray[np.float64]):
-    """ THis is meant to split a window into X, y"""
+    """ This is meant to split a window into X, y"""
+    #[0...50]
+    split = int(0.8*window)
+    train_set = window[:split]
+    val_set = window[split:]
 
-
-    return X, y
+    return train_set, val_set
