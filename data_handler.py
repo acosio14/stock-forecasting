@@ -26,7 +26,7 @@ def extract_test_set(array: NDArray[np.float64], ratio):
 
     return array[0::step]
 
-def sliding_window(array: NDArray[np.float64], window_length: int) -> NDArray[np.float64]:
+def sliding_window(array: NDArray[np.float64], window_length: int, step: int) -> NDArray[np.float64]:
     """Sliding window of a variable size."""
     # Improvement: Add ability to change sliding window step
     # i.e. = [0,1,2], [1,2,3] or [0,1,2],[2,3,4] or [0,1,2],[3,4,5]
@@ -40,7 +40,7 @@ def sliding_window(array: NDArray[np.float64], window_length: int) -> NDArray[np
         idx2 = i - n
         if i == n:
             idx2 = array_length
-        sequence = array[idx1:idx2]
+        sequence = array[idx1:idx2:step]
         arr_list.append(sequence)
 
     return np.column_stack(arr_list)
