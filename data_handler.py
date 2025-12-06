@@ -53,3 +53,7 @@ def split_train_val_data(window: NDArray[np.float64], ratio: int):
     val_set = window[:,split_idx:]
 
     return train_set, val_set
+
+def split_feature_targets(data_set: NDArray[np.float64]):
+    """Return X_set and y_set."""
+    return data_set[:,:-1], data_set[:,-1]
