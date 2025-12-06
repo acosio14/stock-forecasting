@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from numpy.typing import NDArray
 from pathlib import Path
+import torch
 
 def extract_stock_close_price(
         ticker_name: str, period_length: str, filepath: str, columns: list[str],
@@ -14,10 +15,16 @@ def extract_stock_close_price(
         close_price_df.to_csv(filepath)
     return close_price_df[columns].to_numpy()
 
-def data_transformation(array: NDArray[np.float64]):
+def log_transformation(array: NDArray[np.float64]):
     """Perform log transform and standardization of data."""
-    log_array = np.log(array)
-    return (log_array - log_array.mean()) / log_array.std()
+    return np.log(array)
+
+def standardization(array: NDArray[np.float64]):
+    array_mean = array.mean()
+    array_std = array.std()
+    z_score = (array - array_mean) / array_std
+    
+    return z_score, array_mean, array_std
 
 def extract_test_set(array: NDArray[np.float64], ratio):
     array_length = len(array)
@@ -26,7 +33,11 @@ def extract_test_set(array: NDArray[np.float64], ratio):
 
     return array[0::step]
 
-def sliding_window(array: NDArray[np.float64], window_length: int, step: int) -> NDArray[np.float64]:
+def sliding_window(
+        array: NDArray[np.float64],
+        window_length: int,
+        step: int
+) -> NDArray[np.float64]:
     """Sliding window of a variable size."""
     # Improvement: Add ability to change sliding window step
     # i.e. = [0,1,2], [1,2,3] or [0,1,2],[2,3,4] or [0,1,2],[3,4,5]
