@@ -23,10 +23,10 @@ def standardization(array: NDArray[np.float64]):
     array_mean = array.mean()
     array_std = array.std()
     z_score = (array - array_mean) / array_std
-    
+
     return z_score, array_mean, array_std
 
-def extract_test_set(array: NDArray[np.float64], ratio):
+def extract_test_set(array: NDArray[np.float64], ratio: float):
     array_length = len(array)
     test_set_size = int(ratio * array_length)
     step = int(array_length / test_set_size)
