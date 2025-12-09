@@ -30,10 +30,11 @@ def split_train_test_set(array: NDArray[np.float64], ratio: float):
     array_length = len(array)
     test_set_size = int(ratio * array_length)
     step = int(array_length / test_set_size)
-    test_set = array[0::step]
-    train_set = [element for element in array if element not in test_set]
+    
+    test_indicies = [*range(0,array_length,step)]
+    train_indicies = [idx for idx in range(0,array_length) if idx not in test_indicies]
 
-    return train_set, test_set
+    return array[train_indicies], array[test_indicies]
 
 def sliding_window(
         array: NDArray[np.float64],
