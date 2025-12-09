@@ -30,7 +30,7 @@ def split_train_test_set(array: NDArray[np.float64], ratio: float):
     array_length = len(array)
     test_set_size = int(ratio * array_length)
     step = int(array_length / test_set_size)
-    
+
     test_indicies = [*range(0,array_length,step)]
     train_indicies = [idx for idx in range(0,array_length) if idx not in test_indicies]
 
@@ -59,10 +59,10 @@ def sliding_window(
 
     return np.column_stack(arr_list)
 
-def split_train_val_data(window: NDArray[np.float64], ratio: int):
+def split_train_val_data(window: NDArray[np.float64], val_ratio: int):
     """ This is meant to split a np array of windows into train and val sets."""
     #[0...50]
-    split_idx= int(ratio * window)
+    split_idx= int((1-val_ratio) * len(window[0]))
     train_set = window[:,:split_idx]
     val_set = window[:,split_idx:]
 
@@ -70,4 +70,6 @@ def split_train_val_data(window: NDArray[np.float64], ratio: int):
 
 def split_feature_targets(data_set: NDArray[np.float64]):
     """Return X_set and y_set."""
-    return data_set[:,:-1], data_set[:,-1]
+    X = data_set[:,:-1]
+    y = data_set[:,]
+    return data_set[:,:-1], data_set[:,-1:]
