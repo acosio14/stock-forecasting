@@ -1,7 +1,6 @@
 # Sequence models
 import torch
 import torch.nn as nn
-#from torch.nn import RNN
 
 
 class RecurrentNeuralNet(nn.Module):
