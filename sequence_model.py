@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 
 
-class RecurrentNeuralNet(nn.Module):
+class SimpleRNN(nn.Module):
     def __init__(self) -> None:
         super().__init__()
         self.rnn = nn.RNN(input_size=1, hidden_size=8, num_layers=1, batch_first=True)
@@ -16,7 +16,7 @@ class RecurrentNeuralNet(nn.Module):
         return y_hat
 
 
-class LSTMNet(nn.Module):
+class SimpleLSTM(nn.Module):
     def __init__(self) -> None:
         super().__init__()
         self.rnn = nn.LSTM(input_size=1, hidden_size=8, num_layers=1, batch_first=True)
@@ -29,7 +29,7 @@ class LSTMNet(nn.Module):
         return y_hat
 
 
-class GRUNet(nn.Module):
+class SimpleGRU(nn.Module):
     def __init__(self) -> None:
         super().__init__()
         self.rnn = nn.GRU(input_size=1, hidden_size=8, num_layers=1, batch_first=True)
