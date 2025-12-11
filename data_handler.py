@@ -1,12 +1,15 @@
-import yfinance as yf
-import pandas as pd
-import numpy as np
-from numpy.typing import NDArray
 from pathlib import Path
-import torch
+
+import numpy as np
+import yfinance as yf
+from numpy.typing import NDArray
+
 
 def extract_stock_close_price(
-        ticker_name: str, period_length: str, filepath: str, columns: list[str],
+    ticker_name: str,
+    period_length: str,
+    filepath: str,
+    columns: list[str],
 ) -> NDArray[np.float64]:
     """Extract the specific features from the desired stock through yahoo finance."""
     stock_data = yf.Ticker(ticker_name)
@@ -15,31 +18,34 @@ def extract_stock_close_price(
         close_price_df.to_csv(filepath)
     return close_price_df[columns].to_numpy()
 
-def log_transformation(array: NDArray[np.float64]):
+
+def log_transformation(array: NDArray[np.float64]) -> NDArray[np.float64]:
     """Perform log transform and standardization of data."""
     return np.log(array)
 
+
 def standardization(array: NDArray[np.float64]):
+    """Standardize data."""
     array_mean = array.mean()
     array_std = array.std()
     z_score = (array - array_mean) / array_std
 
     return z_score, array_mean, array_std
 
+
 def split_train_test_set(array: NDArray[np.float64], ratio: float):
     array_length = len(array)
     test_set_size = int(ratio * array_length)
     step = int(array_length / test_set_size)
 
-    test_indicies = [*range(0,array_length,step)]
-    train_indicies = [idx for idx in range(0,array_length) if idx not in test_indicies]
+    test_indicies = [*range(0, array_length, step)]
+    train_indicies = [idx for idx in range(array_length) if idx not in test_indicies]
 
     return array[train_indicies], array[test_indicies]
 
+
 def sliding_window(
-        array: NDArray[np.float64],
-        window_length: int,
-        step: int
+    array: NDArray[np.float64], window_length: int, step: int,
 ) -> NDArray[np.float64]:
     """Sliding window of a variable size."""
     # Improvement: Add ability to change sliding window step
@@ -59,17 +65,17 @@ def sliding_window(
 
     return np.column_stack(arr_list)
 
+
 def split_train_val_data(window: NDArray[np.float64], val_ratio: int):
-    """ This is meant to split a np array of windows into train and val sets."""
-    #[0...50]
-    split_idx= int((1-val_ratio) * len(window[0]))
-    train_set = window[:,:split_idx]
-    val_set = window[:,split_idx:]
+    """Split a np array of windows into train and val sets."""
+    # [0...50]
+    split_idx = int((1 - val_ratio) * len(window[0]))
+    train_set = window[:, :split_idx]
+    val_set = window[:, split_idx:]
 
     return train_set, val_set
 
+
 def split_feature_targets(data_set: NDArray[np.float64]):
     """Return X_set and y_set."""
-    X = data_set[:,:-1]
-    y = data_set[:,]
-    return data_set[:,:-1], data_set[:,-1:]
+    return data_set[:, :-1], data_set[:, -1:]
