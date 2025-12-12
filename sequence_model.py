@@ -2,6 +2,8 @@
 import torch
 import torch.nn as nn
 import torch.optim
+from torch.utils.data import DataLoader
+
 
 
 class SimpleRNN(nn.Module):
@@ -34,23 +36,24 @@ class myLSTM():
     """LSTM from scratch."""
 
 
-def train_model(model, num_epochs, num_batches, X, y):
+def train_model(model, num_epochs, num_batches, features,targets):
     """Train Neural Network."""
 
     loss_function = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    data = DataLoader(dataset=(features,targets), batch_sampler=32)
 
-    for iterable in iteration:
-        optimizer.zero_grad()
+    for epoch in num_epochs:
+        for X, y in data:
+            optimizer.zero_grad()
 
-        y_hat = model(X,y)
-        loss = loss_function(y_hat, y)
+            y_hat = model(X,y)
+            loss = loss_function(y_hat, y)
 
-        loss.backward()
-        optimizer.step()
+            loss.backward()
+            optimizer.step()
 
-        total_loss += loss
-
+            total_loss += loss
 
 
 
