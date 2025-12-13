@@ -2,8 +2,7 @@
 import torch
 import torch.nn as nn
 import torch.optim
-from torch.utils.data import DataLoader
-
+import numpy as np
 
 
 class SimpleRNN(nn.Module):
@@ -36,19 +35,44 @@ class myLSTM():
     """LSTM from scratch."""
 
 
-def train_model(model, num_epochs, num_batches, features,targets):
+def batch_generator(data_size, batch_size):
+    idx1 = np.arange(0,data_size,batch_size)
+    idx2 = idx1 + (batch_size-1)
+    idx2 = np.where(idx2 > data_size, data_size, idx2)
+
+    return idx1, idx2
+
+def generate_batches(data, data_size, batch_size):
+    idx = np.arange(0,data_size,batch_size)
+    batches = np.array_split(data, idx[1:])
+
+    return batches
+
+
+def train_model(model, num_epochs, batch_size, features, targets):
     """Train Neural Network."""
 
+    data_size = len(features)
+    if data_size != len(targets):
+        raise ValueError("feature and targets not same length.")
+    
+    num_batches = -(-data_size//batch_size)
+    
+    X_batches = generate_batches(features, data_size, batch_size)
+    y_batches = generate_batches(targets, data_size, batch_size)
+    
     loss_function = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-    data = DataLoader(dataset=(features,targets), batch_sampler=32)
 
-    for epoch in num_epochs:
-        for X, y in data:
+    for epoch in range(num_epochs):
+        for batch in range(num_batches):
+            X_train = X_batches[batch]
+            y_train = y_batches[batch]
+
             optimizer.zero_grad()
 
-            y_hat = model(X,y)
-            loss = loss_function(y_hat, y)
+            y_hat = model(X_train,y_train)
+            loss = loss_function(y_hat, y_train)
 
             loss.backward()
             optimizer.step()
