@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.optim
 import numpy as np
+from numpy.typing import NDArray
 
 
 class SimpleRNN(nn.Module):
@@ -35,17 +36,10 @@ class myLSTM():
     """LSTM from scratch."""
 
 
-def batch_generator(data_size, batch_size):
-    idx1 = np.arange(0,data_size,batch_size)
-    idx2 = idx1 + (batch_size-1)
-    idx2 = np.where(idx2 > data_size, data_size, idx2)
-
-    return idx1, idx2
-
 def generate_batches(data, data_size, batch_size):
     idx = np.arange(0,data_size,batch_size)
     batches = np.array_split(data, idx[1:])
-
+    
     return batches
 
 
@@ -66,9 +60,9 @@ def train_model(model, num_epochs, batch_size, features, targets):
 
     for epoch in range(num_epochs):
         for batch in range(num_batches):
-            X_train = X_batches[batch]
-            y_train = y_batches[batch]
-
+            X_train = torch.from_numpy(X_batches[batch]).to(device="mps")
+            y_train = torch.from_numpy(y_batches[batch]).to(device="mps")
+            
             optimizer.zero_grad()
 
             y_hat = model(X_train,y_train)
@@ -78,6 +72,10 @@ def train_model(model, num_epochs, batch_size, features, targets):
             optimizer.step()
 
             total_loss += loss
+        
+        average_train_loss = total_loss / num_batches
+        print(f"Epoch {epoch}")
+        print(f"Total loss: {average_train_loss}")
 
 
 
