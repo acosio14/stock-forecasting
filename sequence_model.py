@@ -13,8 +13,8 @@ class SimpleRNN(nn.Module):
         self.fc = nn.Linear(in_features=8, out_features=1)
 
     def forward(self, input):  # x (batch, seq_len, input_size)
-        x = self.rnn(input)
-        y_hat = self.fc(x)
+        output, hx = self.rnn(input)
+        y_hat = self.fc(hx)
 
         return y_hat
 
@@ -59,6 +59,7 @@ def train_model(model, num_epochs, batch_size, features, targets):
     loss_function = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
+    total_loss = 0
     for epoch in range(num_epochs):
         for batch in range(num_batches):
             X_train = torch.from_numpy(X_batches[batch]).to(device="mps")
@@ -75,7 +76,7 @@ def train_model(model, num_epochs, batch_size, features, targets):
             total_loss += loss
         
         average_train_loss = total_loss / num_batches
-        print(f"Epoch {epoch}")
+        print(f"Epoch {epoch + 1}")
         print(f"Total loss: {average_train_loss}")
 
 
