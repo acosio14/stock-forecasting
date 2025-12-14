@@ -32,8 +32,9 @@ class SimpleLSTM(nn.Module):
         return y_hat
 
 
-class myLSTM():
-    """LSTM from scratch."""
+#class myLSTM():
+#    """LSTM from scratch."""
+
 
 
 def generate_batches(data, data_size, batch_size):
@@ -45,7 +46,7 @@ def generate_batches(data, data_size, batch_size):
 
 def train_model(model, num_epochs, batch_size, features, targets):
     """Train Neural Network."""
-
+    model.to(device="mps")
     data_size = len(features)
     if data_size != len(targets):
         raise ValueError("feature and targets not same length.")
