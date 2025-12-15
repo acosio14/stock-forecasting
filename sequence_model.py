@@ -63,7 +63,7 @@ def train_model(model, num_epochs, batch_size, learning_rate, features, targets)
             
             optimizer.zero_grad()
 
-            y_hat = model(X_train,y_train)
+            y_hat = model(X_train)
             loss = loss_function(y_hat, y_train)
 
             loss.backward()
