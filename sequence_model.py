@@ -42,7 +42,6 @@ def generate_batches(data, data_size, batch_size):
 
 def train_model(model, num_epochs, batch_size, learning_rate, features, targets):
     """Train Neural Network."""
-    model.to(device="mps")
     data_size = len(features)
     if data_size != len(targets):
         raise ValueError("feature and targets not same length.")
@@ -54,7 +53,7 @@ def train_model(model, num_epochs, batch_size, learning_rate, features, targets)
     
     loss_function = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-
+    model.to(device="mps")
     for epoch in range(num_epochs):
         model.train()
         total_loss = 0
@@ -70,7 +69,7 @@ def train_model(model, num_epochs, batch_size, learning_rate, features, targets)
             loss.backward()
             optimizer.step()
 
-            total_loss += loss
+            total_loss += loss.item()
         
         average_train_loss = total_loss / num_batches
         print(f"Epoch {epoch + 1}")
