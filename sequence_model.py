@@ -58,8 +58,8 @@ def train_model(model, num_epochs, batch_size, learning_rate, features, targets)
         model.train()
         total_loss = 0
         for batch in range(num_batches):
-            X_train = torch.from_numpy(X_batches[batch]).to(device="mps")
-            y_train = torch.from_numpy(y_batches[batch]).to(device="mps")
+            X_train = torch.from_numpy(X_batches[batch].astype(np.float32)).to(device="mps")
+            y_train = torch.from_numpy(y_batches[batch].astype(np.float32)).to(device="mps")
             
             optimizer.zero_grad()
 
