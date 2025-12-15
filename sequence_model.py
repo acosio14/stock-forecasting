@@ -55,8 +55,9 @@ def train_model(model, num_epochs, batch_size, learning_rate, features, targets)
     loss_function = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
-    total_loss = 0
     for epoch in range(num_epochs):
+        model.train()
+        total_loss = 0
         for batch in range(num_batches):
             X_train = torch.from_numpy(X_batches[batch]).to(device="mps")
             y_train = torch.from_numpy(y_batches[batch]).to(device="mps")
