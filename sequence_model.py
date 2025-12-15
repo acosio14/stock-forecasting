@@ -14,7 +14,7 @@ class SimpleRNN(nn.Module):
 
     def forward(self, input):  # x (batch, seq_len, input_size)
         output, hx = self.rnn(input)
-        y_hat = self.fc(hx)
+        y_hat = self.fc(hx[-1])
 
         return y_hat
 
