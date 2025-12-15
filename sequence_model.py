@@ -32,10 +32,6 @@ class SimpleLSTM(nn.Module):
         return y_hat
 
 
-#class myLSTM():
-#    """LSTM from scratch."""
-
-
 
 def generate_batches(data, data_size, batch_size):
     idx = np.arange(0,data_size,batch_size)
@@ -44,7 +40,7 @@ def generate_batches(data, data_size, batch_size):
     return batches
 
 
-def train_model(model, num_epochs, batch_size, features, targets):
+def train_model(model, num_epochs, batch_size, learning_rate, features, targets):
     """Train Neural Network."""
     model.to(device="mps")
     data_size = len(features)
@@ -57,7 +53,7 @@ def train_model(model, num_epochs, batch_size, features, targets):
     y_batches = generate_batches(targets, data_size, batch_size)
     
     loss_function = nn.MSELoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     total_loss = 0
     for epoch in range(num_epochs):
