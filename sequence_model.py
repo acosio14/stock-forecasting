@@ -32,7 +32,6 @@ class SimpleLSTM(nn.Module):
         return y_hat
 
 
-
 def generate_batches(data, data_size, batch_size):
     idx = np.arange(0,data_size,batch_size)
     batches = np.array_split(data, idx[1:])
@@ -40,18 +39,24 @@ def generate_batches(data, data_size, batch_size):
     return batches
 
 
-def train_model(model, num_epochs, batch_size, learning_rate, features, targets):
-    """Train Neural Network."""
+def generate_x_y_batches(features, targets, batch_size):
     data_size = len(features)
     if data_size != len(targets):
         raise ValueError("feature and targets not same length.")
     
-    num_batches = -(-data_size//batch_size)
-    
     X_batches = generate_batches(features, data_size, batch_size)
     y_batches = generate_batches(targets, data_size, batch_size)
+
+    return X_batches, y_batches
+
+
+def train_model(model, num_epochs, batch_size, learning_rate, features, targets):
+    """Train Neural Network."""
     
-    loss_function = nn.MSELoss()
+    X_batches, y_batches = generate_x_y_batches(features, targets, batch_size)
+    num_batches = len(X_batches)
+    
+    losses = []
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     model.to(device="mps")
     for epoch in range(num_epochs):
@@ -63,8 +68,8 @@ def train_model(model, num_epochs, batch_size, learning_rate, features, targets)
             
             optimizer.zero_grad()
 
-            y_hat = model(X_train)
-            loss = loss_function(y_hat, y_train)
+            y_pred = model(X_train)
+            loss = nn.MSELoss(y_pred, y_train)
 
             loss.backward()
             optimizer.step()
@@ -72,8 +77,42 @@ def train_model(model, num_epochs, batch_size, learning_rate, features, targets)
             total_loss += loss.item()
         
         average_train_loss = total_loss / num_batches
+        losses.append(average_train_loss)
+
         print(f"Epoch {epoch + 1}")
-        print(f"Total loss: {average_train_loss}")
+        print(f"Train loss: {average_train_loss}")
+    
+    return losses
+    
 
+@torch.no_grad()
+def evaluate_model(model, num_epochs, batch_size, features, targets):
 
+    X_batches, y_batches = generate_x_y_batches(features, targets, batch_size)
+    num_batches = len(X_batches)
 
+    losses = []
+    all_pred = []
+    actual_targets = []
+    model.eval()
+    for epoch in range(num_epochs):
+        total_loss = 0
+        for batch in range(num_batches):
+            X_test = torch.from_numpy(X_batches[batch].astype(np.float32)).to(device="mps")
+            y_test = torch.from_numpy(y_batches[batch].astype(np.float32)).to(device="mps")
+
+            y_pred = model(X_test)
+            loss = nn.MSELoss(y_pred, y_test)
+
+            total_loss += loss.item()
+
+            all_pred.append(y_pred.cpu().numpy())
+            actual_targets.append(y_test.cpu().numpy)
+                
+        average_eval_loss = total_loss/num_batches
+        losses.append(average_eval_loss)
+
+        print(f"Epoch {epoch + 1}")
+        print(f"Eval Loss: {average_eval_loss}")
+    
+    return all_pred, actual_targets, losses
