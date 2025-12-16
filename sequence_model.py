@@ -1,6 +1,7 @@
 # Sequence models
 import torch
 import torch.nn as nn
+from torch.nn import functional as F
 import torch.optim
 import numpy as np
 from numpy.typing import NDArray
@@ -69,7 +70,7 @@ def train_model(model, num_epochs, batch_size, learning_rate, features, targets)
             optimizer.zero_grad()
 
             y_pred = model(X_train)
-            loss = nn.MSELoss(y_pred, y_train)
+            loss = F.mse_loss(y_pred, y_train)
 
             loss.backward()
             optimizer.step()
@@ -94,6 +95,7 @@ def evaluate_model(model, num_epochs, batch_size, features, targets):
     losses = []
     all_pred = []
     actual_targets = []
+
     model.eval()
     for epoch in range(num_epochs):
         total_loss = 0
@@ -102,7 +104,7 @@ def evaluate_model(model, num_epochs, batch_size, features, targets):
             y_test = torch.from_numpy(y_batches[batch].astype(np.float32)).to(device="mps")
 
             y_pred = model(X_test)
-            loss = nn.MSELoss(y_pred, y_test)
+            loss = F.mse_loss(y_pred, y_test)
 
             total_loss += loss.item()
 
