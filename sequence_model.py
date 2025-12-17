@@ -51,13 +51,13 @@ def generate_x_y_batches(features, targets, batch_size):
     return X_batches, y_batches
 
 
-def train_model(model, num_epochs, batch_size, learning_rate, features, targets):
+def train_model(model, num_epochs, batch_size, learning_rate, X_train, y_train, X_val, y_val):
     """Train Neural Network."""
     
-    X_batches, y_batches = generate_x_y_batches(features, targets, batch_size)
+    X_batches, y_batches = generate_x_y_batches(X_train, y_train, batch_size)
     num_batches = len(X_batches)
     
-    losses = []
+    train_losses = []
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     model.to(device="mps")
     for epoch in range(num_epochs):
@@ -78,43 +78,38 @@ def train_model(model, num_epochs, batch_size, learning_rate, features, targets)
             total_loss += loss.item()
         
         average_train_loss = total_loss / num_batches
-        losses.append(average_train_loss)
+        train_losses.append(average_train_loss)
 
         print(f"Epoch {epoch + 1}")
         print(f"Train loss: {average_train_loss}")
+
+        val_losses = validate_model(model, batch_size, X_val, y_val)
     
-    return losses
+    return train_losses, val_losses
     
 
 @torch.no_grad()
-def evaluate_model(model, num_epochs, batch_size, features, targets):
+def validate_model(model, batch_size, features, targets):
 
     X_batches, y_batches = generate_x_y_batches(features, targets, batch_size)
     num_batches = len(X_batches)
 
-    losses = []
-    all_pred = []
-    actual_targets = []
+    val_losses = []
 
     model.eval()
-    for epoch in range(num_epochs):
-        total_loss = 0
-        for batch in range(num_batches):
-            X_test = torch.from_numpy(X_batches[batch].astype(np.float32)).to(device="mps")
-            y_test = torch.from_numpy(y_batches[batch].astype(np.float32)).to(device="mps")
+    total_loss = 0
+    for batch in range(num_batches):
+        X = torch.from_numpy(X_batches[batch].astype(np.float32)).to(device="mps")
+        y = torch.from_numpy(y_batches[batch].astype(np.float32)).to(device="mps")
 
-            y_pred = model(X_test)
-            loss = F.mse_loss(y_pred, y_test)
+        y_pred = model(X)
+        loss = F.mse_loss(y_pred, y)
 
-            total_loss += loss.item()
+        total_loss += loss.item()
+            
+    average_val_loss = total_loss/num_batches
+    val_losses.append(average_val_loss)
 
-            all_pred.append(y_pred.cpu().numpy())
-            actual_targets.append(y_test.cpu().numpy)
-                
-        average_eval_loss = total_loss/num_batches
-        losses.append(average_eval_loss)
-
-        print(f"Epoch {epoch + 1}")
-        print(f"Eval Loss: {average_eval_loss}")
+    print(f"Eval Loss: {average_val_loss}")
     
-    return all_pred, actual_targets, losses
+    return  val_losses
