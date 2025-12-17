@@ -58,6 +58,7 @@ def train_model(model, num_epochs, batch_size, learning_rate, X_train, y_train, 
     num_batches = len(X_batches)
     
     train_losses = []
+    val_losses = []
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     model.to(device="mps")
     for epoch in range(num_epochs):
@@ -77,13 +78,15 @@ def train_model(model, num_epochs, batch_size, learning_rate, X_train, y_train, 
 
             total_loss += loss.item()
         
-        average_train_loss = total_loss / num_batches
-        train_losses.append(average_train_loss)
+        train_loss = total_loss / num_batches
+        train_losses.append(train_loss)
+        
+        val_loss = validate_model(model, batch_size, X_val, y_val)
+        val_losses.append(val_loss)
 
         print(f"Epoch {epoch + 1}")
-        print(f"Train loss: {average_train_loss}")
-
-        val_losses = validate_model(model, batch_size, X_val, y_val)
+        print(f"Train loss: {train_loss}")
+        print(f"Val Loss: {val_loss}")
     
     return train_losses, val_losses
     
@@ -93,8 +96,6 @@ def validate_model(model, batch_size, features, targets):
 
     X_batches, y_batches = generate_x_y_batches(features, targets, batch_size)
     num_batches = len(X_batches)
-
-    val_losses = []
 
     model.eval()
     total_loss = 0
@@ -107,12 +108,7 @@ def validate_model(model, batch_size, features, targets):
 
         total_loss += loss.item()
             
-    average_val_loss = total_loss/num_batches
-    val_losses.append(average_val_loss)
-
-    print(f"Val Loss: {average_val_loss}")
-    
-    return  val_losses
+    return total_loss / num_batches
 
 @torch.no_grad()
 def test_model(model, X_test, y_test):
