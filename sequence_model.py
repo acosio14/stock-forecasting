@@ -110,7 +110,7 @@ def validate_model(model, batch_size, features, targets):
     average_val_loss = total_loss/num_batches
     val_losses.append(average_val_loss)
 
-    print(f"Eval Loss: {average_val_loss}")
+    print(f"Val Loss: {average_val_loss}")
     
     return  val_losses
 
@@ -118,11 +118,14 @@ def validate_model(model, batch_size, features, targets):
 def test_model(model, X_test, y_test):
     model.eval()
     all_pred = []
+    test_losses = []
     for i in range(len(X_test)):
         y_pred = model(X_test[i])
         loss = F.mse_loss(y_pred, y_test[i])
-        all_pred.append((y_pred,loss))
+
+        all_pred.append(y_pred)
+        test_losses.append(loss)
     
-    return all_pred
+    return all_pred, test_losses
     
 
