@@ -99,11 +99,11 @@ def validate_model(model, batch_size, features, targets):
     model.eval()
     total_loss = 0
     for batch in range(num_batches):
-        X = torch.from_numpy(X_batches[batch].astype(np.float32)).to(device="mps")
-        y = torch.from_numpy(y_batches[batch].astype(np.float32)).to(device="mps")
+        X_val= torch.from_numpy(X_batches[batch].astype(np.float32)).to(device="mps")
+        y_val = torch.from_numpy(y_batches[batch].astype(np.float32)).to(device="mps")
 
-        y_pred = model(X)
-        loss = F.mse_loss(y_pred, y)
+        y_pred = model(X_val)
+        loss = F.mse_loss(y_pred, y_val)
 
         total_loss += loss.item()
             
@@ -113,3 +113,16 @@ def validate_model(model, batch_size, features, targets):
     print(f"Eval Loss: {average_val_loss}")
     
     return  val_losses
+
+@torch.no_grad()
+def test_model(model, X_test, y_test):
+    model.eval()
+    all_pred = []
+    for i in range(len(X_test)):
+        y_pred = model(X_test[i])
+        loss = F.mse_loss(y_pred, y_test[i])
+        all_pred.append((y_pred,loss))
+    
+    return all_pred
+    
+
