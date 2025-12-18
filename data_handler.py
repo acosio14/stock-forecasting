@@ -33,6 +33,15 @@ def standardization(array: NDArray[np.float64]):
     return z_score, array_mean, array_std
 
 
+def inverse_transform(data, mean, std):
+    """ Revert standardization and log transform."""
+    if type(data) != 'numpy.ndarray':
+        data = np.array(data)
+    inv_data = (data * std) + mean
+
+    return np.exp(inv_data)
+
+
 def split_data(array: NDArray[np.float64], ratio: float):
     array_length = len(array)
     data_split_size = int(ratio * array_length)
