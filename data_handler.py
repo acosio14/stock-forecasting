@@ -33,15 +33,15 @@ def standardization(array: NDArray[np.float64]):
     return z_score, array_mean, array_std
 
 
-def split_train_test_set(array: NDArray[np.float64], ratio: float):
+def split_data(array: NDArray[np.float64], ratio: float):
     array_length = len(array)
-    test_set_size = int(ratio * array_length)
-    step = int(array_length / test_set_size)
+    data_split_size = int(ratio * array_length)
+    step = int(array_length / data_split_size)
 
-    test_indicies = [*range(0, array_length, step)]
-    train_indicies = [idx for idx in range(array_length) if idx not in test_indicies]
+    split_indicies = [*range(0, array_length, step)]
+    train_indicies = [idx for idx in range(array_length) if idx not in split_indicies]
 
-    return array[train_indicies], array[test_indicies]
+    return array[train_indicies], array[split_indicies]
 
 
 def sliding_window(
@@ -64,16 +64,6 @@ def sliding_window(
         arr_list.append(sequence)
 
     return np.column_stack(arr_list)
-
-
-def split_train_val_data(window: NDArray[np.float64], val_ratio: int):
-    """Split a np array of windows into train and val sets."""
-    # [0...50]
-    split_idx = int((1 - val_ratio) * len(window[0]))
-    train_set = window[:, :split_idx]
-    val_set = window[:, split_idx:]
-
-    return train_set, val_set
 
 
 def split_feature_targets(data_set: NDArray[np.float64]):
