@@ -34,8 +34,8 @@ def standardization(array: NDArray[np.float64]):
 
 
 def inverse_transform(data, mean, std):
-    """ Revert standardization and log transform."""
-    if type(data) != 'numpy.ndarray':
+    """Revert standardization and log transform."""
+    if type(data) != "numpy.ndarray":
         data = np.array(data)
     inv_data = (data * std) + mean
 
@@ -54,7 +54,9 @@ def split_data(array: NDArray[np.float64], ratio: float):
 
 
 def sliding_window(
-    array: NDArray[np.float64], window_length: int, step: int,
+    array: NDArray[np.float64],
+    window_length: int,
+    step: int,
 ) -> NDArray[np.float64]:
     """Sliding window of a variable size."""
     # Improvement: Add ability to change sliding window step
