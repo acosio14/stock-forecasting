@@ -120,6 +120,6 @@ def test_model(model, X_test, y_test):
     y_pred = model(X_test)
     loss = F.mse_loss(y_pred, y_test)
     
-    return y_pred.cpu(), loss
+    return y_pred.cpu(), loss.item()
     
 
