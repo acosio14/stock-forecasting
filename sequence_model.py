@@ -113,19 +113,13 @@ def validate_model(model, batch_size, features, targets):
 @torch.no_grad()
 def test_model(model, X_test, y_test):
     model.eval()
-    all_pred = []
-    test_losses = []
 
     X_test = torch.from_numpy(X_test.astype(np.float32)).to(device="mps")
     y_test = torch.from_numpy(y_test.astype(np.float32)).to(device="mps")
     
-    for i in range(len(X_test)):
-        y_pred = model(X_test[i])
-        loss = F.mse_loss(y_pred, y_test[i])
-
-        all_pred.append(y_pred.item())
-        test_losses.append(loss)
+    y_pred = model(X_test)
+    loss = F.mse_loss(y_pred, y_test)
     
-    return all_pred, test_losses
+    return y_pred.cpu(), loss
     
 
