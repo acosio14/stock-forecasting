@@ -92,7 +92,7 @@ def train_model(
         val_losses.append(val_loss)
         if val_loss < lowest_val_loss:
             lowest_val_loss = val_loss
-            best_model = (model, epoch)
+            best_model = (model, epoch+1)
 
         print(f"Epoch {epoch + 1}")
         print(f"Train loss: {train_loss}")
