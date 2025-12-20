@@ -28,7 +28,7 @@ class SimpleLSTM(nn.Module):
 
     def forward(self, input):  # x (batch, seq_len, input_size)
         output, (hx, cx) = self.lstm(input)
-        y_hat = self.fc(output[:, -1, :])
+        y_hat = self.fc(hx[-1])
 
         return y_hat
 
@@ -92,7 +92,7 @@ def train_model(
         val_losses.append(val_loss)
         if val_loss < lowest_val_loss:
             lowest_val_loss = val_loss
-            best_model = model
+            best_model = (model, epoch)
 
         print(f"Epoch {epoch + 1}")
         print(f"Train loss: {train_loss}")
