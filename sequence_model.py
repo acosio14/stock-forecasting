@@ -61,6 +61,7 @@ def train_model(
 
     train_losses = []
     val_losses = []
+    lowest_val_loss = 100
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     model.to(device="mps")
     for epoch in range(num_epochs):
@@ -89,12 +90,15 @@ def train_model(
 
         val_loss = validate_model(model, batch_size, X_val, y_val)
         val_losses.append(val_loss)
+        if val_loss < lowest_val_loss:
+            lowest_val_loss = val_loss
+            best_model = model
 
         print(f"Epoch {epoch + 1}")
         print(f"Train loss: {train_loss}")
         print(f"Val Loss: {val_loss}")
 
-    return train_losses, val_losses
+    return train_losses, val_losses, best_model
 
 
 @torch.no_grad()
@@ -113,7 +117,9 @@ def validate_model(model, batch_size, features, targets):
 
         total_loss += loss.item()
 
-    return total_loss / num_batches
+    val_loss = total_loss / num_batches
+
+    return val_loss
 
 
 @torch.no_grad()
