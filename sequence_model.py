@@ -6,33 +6,41 @@ from torch.nn import functional as F
 
 
 class SimpleRNN(nn.Module):
+    """Create Simple RNN Model."""
+
     def __init__(self) -> None:
         super().__init__()
         self.rnn = nn.RNN(input_size=1, hidden_size=8, num_layers=1, batch_first=True)
         self.fc = nn.Linear(in_features=8, out_features=1)
 
-    def forward(self, x):  # x (batch, seq_len, input_size)
+    def forward(self, x: torch.tensor) -> torch.tensor:
         _, hx = self.rnn(x)
         return self.fc(hx[-1])
 
 
 class SimpleLSTM(nn.Module):
+    """create Simple LSTM Model."""
+
     def __init__(self) -> None:
         super().__init__()
         self.lstm = nn.LSTM(input_size=1, hidden_size=8, num_layers=1, batch_first=True)
         self.fc = nn.Linear(in_features=8, out_features=1)
 
-    def forward(self, x):  # x (batch, seq_len, input_size)
+    def forward(self, x: torch.tensor) -> torch.tensor:
         _, (hx, _) = self.lstm(x)
         return self.fc(hx[-1])
 
 
-def generate_batches(data, data_size, batch_size):
+def generate_batches(data: np.array, data_size: int, batch_size: int) -> np.array:
+    """Split data into batches."""
     idx = np.arange(0, data_size, batch_size)
     return np.array_split(data, idx[1:])
 
 
-def generate_x_y_batches(features, targets, batch_size):
+def generate_x_y_batches(
+    features: np.array, targets: np.array, batch_size: int
+) -> tuple[np.array, np.array]:
+    """Split data inot x and y batches using generate_batches."""
     data_size = len(features)
     if data_size != len(targets):
         raise ValueError("feature and targets not same length.")
@@ -44,8 +52,15 @@ def generate_x_y_batches(features, targets, batch_size):
 
 
 def train_model(
-    model, num_epochs, batch_size, learning_rate, X_train, y_train, X_val, y_val,
-):
+    model: SimpleRNN | SimpleLSTM,
+    num_epochs: int,
+    batch_size: int,
+    learning_rate: float,
+    X_train: np.array,
+    y_train: np.array,
+    X_val: np.array,
+    y_val: np.array,
+) -> tuple[list[float], list[float], tuple[SimpleRNN | SimpleLSTM, int]]:
     """Train Neural Network."""
     X_batches, y_batches = generate_x_y_batches(X_train, y_train, batch_size)
     num_batches = len(X_batches)
@@ -93,7 +108,10 @@ def train_model(
 
 
 @torch.no_grad()
-def validate_model(model, batch_size, features, targets):
+def validate_model(
+    model: SimpleRNN | SimpleLSTM, batch_size: int, features: np.array, targets: np.array
+) -> float:
+    """Validate Model using MSE loss."""
     X_batches, y_batches = generate_x_y_batches(features, targets, batch_size)
     num_batches = len(X_batches)
 
@@ -112,7 +130,10 @@ def validate_model(model, batch_size, features, targets):
 
 
 @torch.no_grad()
-def test_model(model, X_test, y_test):
+def test_model(
+    model: SimpleRNN | SimpleLSTM, X_test: np.array, y_test: np.array
+) -> torch.tensor:
+    """Make predictions on test data."""
     model.eval()
 
     X_test = torch.from_numpy(X_test.astype(np.float32)).to(device="mps")
@@ -122,7 +143,10 @@ def test_model(model, X_test, y_test):
 
     return y_pred.cpu()
 
-def calculate_regression_metrics(y_pred, y_true):
+def calculate_regression_metrics(
+    y_pred: torch.tensor, y_true: torch.tensor
+) -> tuple[float, float, float, float]:
+    """Calculate regression metrics from model predictions."""
     sum_of_squares_residuals = np.sum(np.pow(y_true - y_pred,2))
     total_sum_of_squares = np.sum(np.pow(y_true - np.mean(y_true),2))
     r2_score = np.round( 1 - (sum_of_squares_residuals / total_sum_of_squares) , 3)
