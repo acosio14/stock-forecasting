@@ -38,12 +38,13 @@ def generate_batches(data: np.array, data_size: int, batch_size: int) -> np.arra
 
 
 def generate_x_y_batches(
-    features: np.array, targets: np.array, batch_size: int
+    features: np.array, targets: np.array, batch_size: int,
 ) -> tuple[np.array, np.array]:
     """Split data inot x and y batches using generate_batches."""
     data_size = len(features)
+    error_msg = "feature and targets not same length."
     if data_size != len(targets):
-        raise ValueError("feature and targets not same length.")
+        raise ValueError(error_msg)
 
     x_batches = generate_batches(features, data_size, batch_size)
     y_batches = generate_batches(targets, data_size, batch_size)
@@ -109,7 +110,10 @@ def train_model(
 
 @torch.no_grad()
 def validate_model(
-    model: SimpleRNN | SimpleLSTM, batch_size: int, features: np.array, targets: np.array
+    model: SimpleRNN | SimpleLSTM,
+    batch_size: int,
+    features: np.array,
+    targets: np.array,
 ) -> float:
     """Validate Model using MSE loss."""
     X_batches, y_batches = generate_x_y_batches(features, targets, batch_size)
@@ -131,7 +135,7 @@ def validate_model(
 
 @torch.no_grad()
 def test_model(
-    model: SimpleRNN | SimpleLSTM, X_test: np.array, y_test: np.array
+    model: SimpleRNN | SimpleLSTM, X_test: np.array, y_test: np.array,
 ) -> torch.tensor:
     """Make predictions on test data."""
     model.eval()
@@ -144,7 +148,7 @@ def test_model(
     return y_pred.cpu()
 
 def calculate_regression_metrics(
-    y_pred: torch.tensor, y_true: torch.tensor
+    y_pred: torch.tensor, y_true: torch.tensor,
 ) -> tuple[float, float, float, float]:
     """Calculate regression metrics from model predictions."""
     sum_of_squares_residuals = np.sum(np.pow(y_true - y_pred,2))
