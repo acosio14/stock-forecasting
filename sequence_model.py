@@ -1,10 +1,8 @@
-# Sequence models
-import torch
-import torch.nn as nn
-from torch.nn import functional as F
-import torch.optim
 import numpy as np
-from numpy.typing import NDArray
+import torch
+import torch.optim
+from torch import nn
+from torch.nn import functional as F
 
 
 class SimpleRNN(nn.Module):
@@ -13,11 +11,9 @@ class SimpleRNN(nn.Module):
         self.rnn = nn.RNN(input_size=1, hidden_size=8, num_layers=1, batch_first=True)
         self.fc = nn.Linear(in_features=8, out_features=1)
 
-    def forward(self, input):  # x (batch, seq_len, input_size)
-        output, hx = self.rnn(input)
-        y_hat = self.fc(hx[-1])
-
-        return y_hat
+    def forward(self, x):  # x (batch, seq_len, input_size)
+        _, hx = self.rnn(x)
+        return self.fc(hx[-1])
 
 
 class SimpleLSTM(nn.Module):
@@ -26,18 +22,14 @@ class SimpleLSTM(nn.Module):
         self.lstm = nn.LSTM(input_size=1, hidden_size=8, num_layers=1, batch_first=True)
         self.fc = nn.Linear(in_features=8, out_features=1)
 
-    def forward(self, input):  # x (batch, seq_len, input_size)
-        output, (hx, cx) = self.lstm(input)
-        y_hat = self.fc(hx[-1])
-
-        return y_hat
+    def forward(self, x):  # x (batch, seq_len, input_size)
+        _, (hx, _) = self.lstm(x)
+        return self.fc(hx[-1])
 
 
 def generate_batches(data, data_size, batch_size):
     idx = np.arange(0, data_size, batch_size)
-    batches = np.array_split(data, idx[1:])
-
-    return batches
+    return np.array_split(data, idx[1:])
 
 
 def generate_x_y_batches(features, targets, batch_size):
@@ -45,17 +37,16 @@ def generate_x_y_batches(features, targets, batch_size):
     if data_size != len(targets):
         raise ValueError("feature and targets not same length.")
 
-    X_batches = generate_batches(features, data_size, batch_size)
+    x_batches = generate_batches(features, data_size, batch_size)
     y_batches = generate_batches(targets, data_size, batch_size)
 
-    return X_batches, y_batches
+    return x_batches, y_batches
 
 
 def train_model(
-    model, num_epochs, batch_size, learning_rate, X_train, y_train, X_val, y_val
+    model, num_epochs, batch_size, learning_rate, X_train, y_train, X_val, y_val,
 ):
     """Train Neural Network."""
-
     X_batches, y_batches = generate_x_y_batches(X_train, y_train, batch_size)
     num_batches = len(X_batches)
 
@@ -69,10 +60,10 @@ def train_model(
         total_loss = 0
         for batch in range(num_batches):
             X_train = torch.from_numpy(X_batches[batch].astype(np.float32)).to(
-                device="mps"
+                device="mps",
             )
             y_train = torch.from_numpy(y_batches[batch].astype(np.float32)).to(
-                device="mps"
+                device="mps",
             )
 
             optimizer.zero_grad()
@@ -117,9 +108,7 @@ def validate_model(model, batch_size, features, targets):
 
         total_loss += loss.item()
 
-    val_loss = total_loss / num_batches
-
-    return val_loss
+    return total_loss / num_batches
 
 
 @torch.no_grad()
@@ -139,7 +128,7 @@ def calculate_regression_metrics(y_pred, y_true):
     r2_score = np.round( 1 - (sum_of_squares_residuals / total_sum_of_squares) , 3)
 
     mse = np.round(
-        np.mean(np.pow(y_true - y_pred,2))
+        np.mean(np.pow(y_true - y_pred,2)),
     )
 
     rmse = np.round(np.sqrt(mse),3)
