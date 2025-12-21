@@ -132,3 +132,18 @@ def test_model(model, X_test, y_test):
     y_pred = model(X_test)
 
     return y_pred.cpu()
+
+def calculate_regression_metrics(y_pred, y_true):
+    sum_of_squares_residuals = np.sum(np.pow(y_true - y_pred,2))
+    total_sum_of_squares = np.sum(np.pow(y_true - np.mean(y_true),2))
+    r2_score = 1 - (sum_of_squares_residuals / total_sum_of_squares)
+
+    mse = np.round(
+        np.mean(np.pow(y_true - y_pred,2))
+    )
+
+    rmse = np.round(np.sqrt(mse),3)
+
+    mae = np.round(np.mean(np.abs(y_true - y_pred)),3)
+
+    return mse, rmse, mae, r2_score
