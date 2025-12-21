@@ -136,7 +136,7 @@ def test_model(model, X_test, y_test):
 def calculate_regression_metrics(y_pred, y_true):
     sum_of_squares_residuals = np.sum(np.pow(y_true - y_pred,2))
     total_sum_of_squares = np.sum(np.pow(y_true - np.mean(y_true),2))
-    r2_score = 1 - (sum_of_squares_residuals / total_sum_of_squares)
+    r2_score = np.round( 1 - (sum_of_squares_residuals / total_sum_of_squares) , 3)
 
     mse = np.round(
         np.mean(np.pow(y_true - y_pred,2))
