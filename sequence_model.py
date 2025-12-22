@@ -9,24 +9,28 @@ class SimpleRNN(nn.Module):
     """Create Simple RNN Model."""
 
     def __init__(self) -> None:
+        """Initialize an instance of SimpleRNN."""
         super().__init__()
         self.rnn = nn.RNN(input_size=1, hidden_size=8, num_layers=1, batch_first=True)
         self.fc = nn.Linear(in_features=8, out_features=1)
 
     def forward(self, x: torch.tensor) -> torch.tensor:
+        """Forward pass through Neural Network."""
         _, hx = self.rnn(x)
         return self.fc(hx[-1])
 
 
 class SimpleLSTM(nn.Module):
-    """create Simple LSTM Model."""
+    """Create Simple LSTM Model."""
 
     def __init__(self) -> None:
+        """Initialize an instance of SimpleRNN."""
         super().__init__()
         self.lstm = nn.LSTM(input_size=1, hidden_size=8, num_layers=1, batch_first=True)
         self.fc = nn.Linear(in_features=8, out_features=1)
 
     def forward(self, x: torch.tensor) -> torch.tensor:
+        """Forward pass through Neural Network."""
         _, (hx, _) = self.lstm(x)
         return self.fc(hx[-1])
 
@@ -63,6 +67,7 @@ def train_model(
     y_val: np.array,
 ) -> tuple[list[float], list[float], tuple[SimpleRNN | SimpleLSTM, int]]:
     """Train Neural Network."""
+
     X_batches, y_batches = generate_x_y_batches(X_train, y_train, batch_size)
     num_batches = len(X_batches)
 
