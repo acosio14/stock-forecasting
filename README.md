@@ -4,7 +4,7 @@ This project focuses on building sequence models to forecast Nvidia’s closing 
 
 The data was log-transformed and standardized to reduce exponential growth and center the values around zero. Sliding windows were then used to convert the time series into sequences suitable for training. Both models were implemented in PyTorch with identical architectures (input size 1, hidden size 8, one recurrent layer) and trained using the Adam optimizer and Mean Squared Error loss for 10 epochs.
 
-Model performance was evaluated on a completely unseen test set using regression metrics including MSE, RMSE, MAE, and R². The LSTM outperformed the RNN across all metrics, which aligns with its ability to better capture longer term temporal dependencies. This project provided hands on experience with sequence modeling and highlighted the importance of proper data splitting and preprocessing for time series forecasting.
+Model performance was evaluated on a completely unseen test set using regression metrics including MSE, RMSE, MAE, and R². The LSTM outperformed the RNN across all metrics, which aligns with its ability to better capture longer term temporal dependencies. This project provided hands on experience with sequence modeling and highlighted the importance of proper data splitting and preprocessing for time series forecasting. The entire workflow and results of this project can be viewed in the following Jupyter notebook, [stock_forecasting](https://github.com/acosio14/stock-forecasting/blob/main/stock_forecasting.ipynb)
 
 Overall, I learned:
 - How to build and train RNN and LSTM models in PyTorch
